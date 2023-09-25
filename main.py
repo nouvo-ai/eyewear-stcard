@@ -1,6 +1,10 @@
 import cv2
 import numpy as np
 
+import random
+
+import const
+
 # Merge the two images considering the alpha channel
 def add_glasses(model:np.ndarray, glasses:np.ndarray) -> np.ndarray:
     # Ensure that the images have the same size
@@ -18,12 +22,16 @@ def photo_to_id_card(photo:np.ndarray, id_card:np.ndarray) -> np.ndarray:
 
 from PIL import Image, ImageDraw, ImageFont
 
-def text_to_id_card(id_card:Image, name:str, optical_id:str, is_en:bool) -> Image:
+def text_to_id_card(id_card:Image, id_card_info:dict, optical_num:int) -> Image:
     Unica77_path = "fonts/Unica77LL-Regular.otf"
     Noto_Sans_path = "fonts/NotoSans-Regular.ttf"
     font_size = 84
     font_color = "#781945"
     letter_spacing = 1
+    is_en = id_card_info["is_en"]
+    # name = id_card_info["name"]
+    name = const.MODEL_NAME[optical_num]
+    optical_id = const.OPTICAL_MODEL_NAME[optical_num]
 
     # validate string
     font = ImageFont.truetype(Unica77_path, font_size)
@@ -40,10 +48,19 @@ def text_to_id_card(id_card:Image, name:str, optical_id:str, is_en:bool) -> Imag
     return id_card
 
 if __name__ == "__main__":
-    optical_num = 6
-    name = "ARIA"
-    optical_id = "OAA-02"
-    is_en = True
+    # input data
+    id_card_info = {
+        "name": "TEST",
+        "is_en": True,
+        "sex": "male",
+    }
+
+    if id_card_info["sex"] == "female":
+        optical_num = random.randint(1, 4)
+    elif id_card_info["sex"] == "male":
+        optical_num = random.randint(5, 8)
+    else:
+        optical_num = random.choice([1, 4, 6, 7])
 
     # add_glasses() usage
     test_ytt_model = cv2.imread(f'srcs/model_{optical_num:02}.png', cv2.IMREAD_UNCHANGED)
@@ -61,6 +78,6 @@ if __name__ == "__main__":
     # text_to_id_card() usage
     id_card_image_path = "output/id_card.png"
     id_card = Image.open(id_card_image_path)
-    result_image = text_to_id_card(id_card, name, optical_id, is_en)
+    result_image = text_to_id_card(id_card, id_card_info, optical_num)
     # result_image.show()
     result_image.save('output/student_id_card.png')
