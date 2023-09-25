@@ -18,7 +18,7 @@ def photo_to_id_card(photo:np.ndarray, id_card:np.ndarray) -> np.ndarray:
 
 from PIL import Image, ImageDraw, ImageFont
 
-def text_to_id_card(id_card:Image, name:str, optical_id:str) -> Image:
+def text_to_id_card(id_card:Image, name:str, optical_id:str, is_en:bool) -> Image:
     Unica77_path = "fonts/Unica77LL-Regular.otf"
     Noto_Sans_path = "fonts/NotoSans-Regular.ttf"
     font_size = 84
@@ -27,7 +27,7 @@ def text_to_id_card(id_card:Image, name:str, optical_id:str) -> Image:
 
     # validate string
     font = ImageFont.truetype(Unica77_path, font_size)
-    if any(not c.isalpha() for c in name):
+    if not is_en:
         font = ImageFont.truetype(Noto_Sans_path, font_size)
 
     # draw text
@@ -40,9 +40,14 @@ def text_to_id_card(id_card:Image, name:str, optical_id:str) -> Image:
     return id_card
 
 if __name__ == "__main__":
+    optical_num = 6
+    name = "ARIA"
+    optical_id = "OAA-02"
+    is_en = True
+
     # add_glasses() usage
-    test_ytt_model = cv2.imread('srcs/test_ytt_model.png', cv2.IMREAD_UNCHANGED)
-    test_ytt = cv2.imread('srcs/test_ytt.png', cv2.IMREAD_UNCHANGED)
+    test_ytt_model = cv2.imread(f'srcs/model_{optical_num:02}.png', cv2.IMREAD_UNCHANGED)
+    test_ytt = cv2.imread(f'srcs/atomic_{optical_num:02}.png', cv2.IMREAD_UNCHANGED)
     # test_ytt = cv2.imread('srcs/test_ytt_x3.png', cv2.IMREAD_UNCHANGED)
     combined_image = add_glasses(test_ytt_model, test_ytt)
     cv2.imwrite('output/combined_image.png', combined_image)
@@ -54,9 +59,8 @@ if __name__ == "__main__":
     cv2.imwrite('output/id_card.png', id_card)
 
     # text_to_id_card() usage
-    id_card_image_path = "srcs/card.png"
+    id_card_image_path = "output/id_card.png"
     id_card = Image.open(id_card_image_path)
-    name = "권지용"
-    optical_id = "OAA-02"
-    result_image = text_to_id_card(id_card, name, optical_id)
-    result_image.show()
+    result_image = text_to_id_card(id_card, name, optical_id, is_en)
+    # result_image.show()
+    result_image.save('output/student_id_card.png')
