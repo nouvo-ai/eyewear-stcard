@@ -1,8 +1,10 @@
+# exlib
 import cv2
 import numpy as np
-
+from PIL import Image, ImageDraw, ImageFont
+# stdlib
 import random
-
+# userlib
 import const
 
 # Merge the two images considering the alpha channel
@@ -19,8 +21,6 @@ def add_glasses(model:np.ndarray, glasses:np.ndarray) -> np.ndarray:
 def photo_to_id_card(photo:np.ndarray, id_card:np.ndarray) -> np.ndarray:
     id_card[156:156+photo.shape[0], 156:156+photo.shape[1]] = photo
     return id_card
-
-from PIL import Image, ImageDraw, ImageFont
 
 def text_to_id_card(id_card:Image, id_card_info:dict, optical_num:int) -> Image:
     Unica77_path = "fonts/Unica77LL-Regular.otf"
